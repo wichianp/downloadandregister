@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dist/jquery.Thailand.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script type="text/javascript"
+    src="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dist/jquery.Thailand.min.js"></script>
+  <script type="text/javascript"
+    src="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dependencies/JQL.min.js"></script>
+  <script type="text/javascript"
+    src="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dependencies/typeahead.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pattaya&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sriracha&display=swap');
+
+    body {
+      background: url("https://archisite.sa/wp-content/uploads/2023/03/ICT-low-current.jpg") no-repeat center center fixed;
+      background-size: cover;
+      background-color: #f8f9faaa;
+      font-family: 'Prompt', sans-serif;
+
+      background-blend-mode: lighten;
+    }
+
+    .title {
+      font-family: 'Pattaya', sans-serif;
+    }
+
+    .sub-title {
+      font-family: 'Sriracha', sans-serif;
+    }
+
+    .nav-tabs .nav-link.active {
+      background-color: #0d6efd;
+      color: #fff;
+    }
+
+    .card-stat {
+      border: none;
+      border-radius: 15px;
+      transition: transform 0.2s;
+    }
+
+    .card-stat:hover {
+      transform: translateY(-5px);
+    }
+
+    .star-rating {
+      font-size: 2.5rem;
+      color: #ccc;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .star-rating .fa-star.active {
+      color: #ffc107;
+    }
+
+    .card-post-it {
+      padding: 16px;
+      border-radius: 3px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .12);
+      transition: .3s;
+    }
+
+    .bg-card {
+      background: url("https://img.freepik.com/premium-photo/rectangular-cubes-abstract-bacgkround-3d-illustration-high-resolution_92790-3399.jpg") no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .12);
+      transition: .3s;
+    }
+
+    .card-footer{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto; 
+      background: #0000;
+    } 
+
+    .absolute-center-top {
+      position: absolute;
+      top: -0.15rem;          /* -top-1 -0.25*/
+      left: 50%;              /* left-1/2 */
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
+    .parent {
+      position: relative;
+    }
+
+    .name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .stars {
+      color: #f59e0b;
+    }
+
+    .comment {
+      font-size: .95rem;
+    }
+
+    .date {
+      font-size:.8rem;
+      opacity:.7;
+      text-align: right;
+    }
+
+    .paginationx {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .paginationx button {
+      padding: 3px 10px;
+      border: none;
+      margin: 0 4px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fdb462;
+    }
+
+    .paginationx button.active {
+      background: #eb6325;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loader">
+    <div class="spinner-border text-primary"></div>
+  </div>
+  <!-- header -->
+  <div class="text-center py-4">
+    <img class="mb-3" src="https://semicon.github.io/img/web/logoxxx.png" width="80">
+    <h2 class="title">ระบบลงทะเบียนทำสำเนาและประเมินคุณภาพ</h2>
+    <h3 class="sub-title">ครูเชียรรวมสื่อและนวัตกรรม</h2>
+  </div>
+
+  <div class="container py-4">
+    <!-- menu -->
+    <ul class="nav nav-tabs nav-justified mb-4" id="mainTab" role="tablist">
+      <li class="nav-item">
+        <button id="home" class="nav-link active  px-0" data-bs-toggle="tab" data-bs-target="#dash-tab" onclick="loadDashboard()">หน้าแรก</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link  px-0" data-bs-toggle="tab" data-bs-target="#reg-tab">ลงทะเบียน</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link  px-0" id="rate-nav" data-bs-toggle="tab" data-bs-target="#rate-tab" onclick="chackStatus()">ประเมิน</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link  px-0" id="dl-nav" data-bs-toggle="tab" data-bs-target="#dl-tab" onclick="chackStatus()">ดาวน์โหลด</button>
+      </li>
+    </ul>
+
+
+    <!-- Content -->
+    <div class="tab-content mt-3">
+      <!-- Stat -->
+      <div class="tab-pane fade show active" id="dash-tab">
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="card-stat shadow-sm p-3 text-center bg-white bg-opacity-50">
+              <h5 class="text-muted">จำนวนผู้ลงทะเบียน</h5>
+              <h2 id="stat-users" class="text-primary fw-bold">0</h2>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-stat shadow-sm p-3 text-center bg-white bg-opacity-50">
+              <h5 class="text-muted">จำนวนการให้ดาว</h5>
+              <h2 id="stat-ratings" class="text-info fw-bold">0</h2>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-stat shadow-sm p-3 text-center bg-white bg-opacity-50">
+              <h5 class="text-muted">คะแนนเฉลี่ย</h5>
+              <h2 id="stat-avg" class="text-warning fw-bold">0.00</h2>
+            </div>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="card shadow-sm p-3 h-100 bg-white bg-opacity-50">
+              <h5>การกระจายของระดับดาว</h5>
+              <canvas class=" align-self-end mt-3" id="radarChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow-sm p-3 h-100 bg-white bg-opacity-50">
+              <h5>สัดส่วนผู้ลงทะเบียนตามจังหวัด</h5>
+              <canvas id="pieChart" class="mt-3"></canvas>
+              <div style="text-align:center;margin-top:8px;">
+                <button class="btn btn-sm" id="prevPie">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#1f1f1f"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
+                </button>
+                <span id="piePageInfo" class="text-muted text-small">1/1</span>
+                <button class="btn btn-sm" id="nextPie">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#1f1f1f"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Post-it -->
+        <div class="card shadow-sm p-4 h-100 bg-white bg-opacity-50 mt-3">
+          <h5>📢 เสียงสะท้อนจากผู้ใช้งาน</h5>
+          <div id="cards" class="row g-3 mt-3"></div>
+          <div id="spinner" class="text-center mt-3 d-none">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <div id="pagination" class="paginationx"></div>
+        </div>
+      </div>
+
+      <!-- register Form -->
+      <div class="tab-pane fade" id="reg-tab">
+        <div class="card shadow-sm mx-auto bg-white bg-opacity-50" style="max-width: 600px;">
+          <div class="card-body p-4">
+            <h4 class="mb-4 text-center">ลงทะเบียนผู้ใช้งาน</h4>
+            <form id="submitForm" onsubmit="submitReg()">
+              <div class="mb-3">
+                <label>ชื่อ</label><input type="text" id="fname" class="form-control bg-white bg-opacity-50" required>
+              </div>
+              <div class="mb-3">
+                <label>นามสกุล</label><input type="text" id="lname" class="form-control bg-white bg-opacity-50" required>
+              </div>
+              <div class="mb-3">
+                <label>สังกัดหน่วยงาน</label><input type="text" id="agency" class="form-control bg-white bg-opacity-50" required>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label>อำเภอ</label><input type="text" id="dist" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label>จังหวัด</label><input type="text" id="prov" class="form-control" required>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 py-2">บันทึกข้อมูล</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating Scale -->
+      <div class="tab-pane fade" id="rate-tab">
+        <div class="card shadow-sm mx-auto text-center bg-white bg-opacity-50" style="max-width: 600px;">
+          <div class="card-body p-4">
+            <h4>ประเมินคุณภาพ</h4>
+            <p class="text-muted small">ID: <span id="cur-id">ยังไม่ได้ลงทะเบียน</span></p>
+            <div class="star-rating my-3" id="star-container">
+              <i class="fa-solid fa-star" data-v="1"></i>
+              <i class="fa-solid fa-star" data-v="2"></i>
+              <i class="fa-solid fa-star" data-v="3"></i>
+              <i class="fa-solid fa-star" data-v="4"></i>
+              <i class="fa-solid fa-star" data-v="5"></i>
+            </div>
+            <textarea id="comment" class="form-control mb-3"  rows="3" maxlength="125" placeholder="ความคิดเห็นเพิ่มเติม..."></textarea>
+            <button id="btnRate" class="btn btn-warning w-100" onclick="submitRate()">ส่งความพึงพอใจ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Files -->
+      <div class="tab-pane fade text-center" id="dl-tab">
+        <div class="py-5 shadow-sm mx-auto bg-white bg-opacity-50 card" style="max-width: 600px;">
+          <div id="dl-icon-area">
+            <i class="fa-solid fa-file-arrow-down fa-5x mb-3 text-success"></i>
+          </div>
+          <h3>ระบบดาวน์โหลดเอกสาร</h3>
+          <div class="mx-auto" style="max-width: 400px;">
+            <label for="projectSelect" class="form-label">เลือกโปรเจกต์</label>
+            <select id="projectSelect" class="form-select bg-success bg-opacity-25">
+              <option value=""> --- เลือกโปรเจกต์ --- </option>
+            </select>
+            <button class="btn btn-primary btn-lg w-100 shadow-sm py-3 mt-3" id="mainDownloadBtn" onclick="checkAndDownload()" disabled>
+              <i class="fa-solid fa-download me-2"></i> คลิกเพื่อดาวน์โหลด
+            </button>
+          </div>
+          <p class="text-success mt-4 mb-1" id="dl-status-text">คุณได้รับสิทธิ์ดาวน์โหลดสื่อและนวัตกรรม</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center text-primary align-middle"
+    style="height: 80px; display: flex; justify-content: center; align-items: center;">
+    <p>Copyright © 2025. ❤️ <a href="https://guruchian.blogspot.com/" target="_blank"
+        style="text-decoration:none;">GuruChian</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+
+    $.Thailand({
+      $amphoe: $('#dist'), // input ของอำเภอ
+      $province: $('#prov'), // input ของจังหวัด
+    });
+
+    // ตัวแปรเก็บสถานะ (เพิ่มจากเดิมเล็กน้อย)
+    let state = {
+      fullname: '',
+      id: '', 
+      registered: false, 
+      rated: false, 
+      stars: 0
+    };
+
+    let charts = {}; // เก็บค่า charts
+    const CACHE_KEY = 'download_data_x1';  // Key Local Storege
+    
+    // โหลดค่าเริ่มต้น
+    window.onload = () => {
+      loadDashboard(); 
+      load(1);
+      loadFilesData()
+    };
+    
+    // คลิกให้ดาว
+    let stars = 0
+    document.querySelectorAll('.star-rating i').forEach(star => {
+        star.onclick = function() {
+          stars = this.dataset.v;
+          state.stars = stars;
+          document.querySelectorAll('.star-rating i').forEach(s => {
+            s.classList.toggle('active', s.dataset.v <= state.stars);
+          });
+        };
+    });
+    
+    // ---------------- load Dashboard --------------------
+    function loadDashboard() {
+      document.getElementById('loader').style.display = 'flex';
+      const cachedData = localStorage.getItem(CACHE_KEY);
+        if (cachedData) {
+          try {
+            const datax = JSON.parse(cachedData);
+            document.getElementById('cur-id').innerText = datax.id ? datax.id : 'ยังไม่ลงทะเบียน';
+            state  = datax;
+          } catch(e) { console.error("Cache error", e); }
+        }
+      google.script.run.withSuccessHandler(data => {
+        document.getElementById('stat-users').innerText = data.cards.totalUsers;
+        document.getElementById('stat-ratings').innerText = data.cards.totalRatings;
+        document.getElementById('stat-avg').innerText = data.cards.avgStars;
+        renderCharts(data);
+        document.getElementById('loader').style.display = 'none';
+      }).getDashboardData();
+    }
+
+    
+  
+    
+    /** ---------- สร้างกราฟ ------------ */
+    let legendPage = 1;
+    const legendPageSize = 15;
+
+    function renderCharts(data) {
+
+      if (charts.radar) charts.radar.destroy();
+      if (charts.pie) charts.pie.destroy();
+
+      const totalLabels = data.provinces.labels.length;
+      const totalPages = Math.ceil(totalLabels / legendPageSize);
+      
+      // ------------- 1. Pie Chart -------------------
+      charts.pie = new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+          labels: data.provinces.labels,
+          datasets: [{
+            data: data.provinces.values,
+            backgroundColor: [
+              'rgb(255, 99, 132)',
+              'rgb(255, 159, 64)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(54, 162, 235)',
+              'rgb(153, 102, 255)',
+              'rgb(201, 203, 207)',
+              '#8dd3c7','#ffffb3',
+              '#bebada','#fb8072',
+              '#80b1d3','#fdb462'
+            ],
+            borderWidth: 1
+          }]
+        },
+
+        options: {
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 15,
+                boxHeight: 8,
+
+                // ⭐ KEY POINT
+                filter: (legendItem) => {
+                  const index = legendItem.index;
+                  const start = (legendPage - 1) * legendPageSize;
+                  const end = start + legendPageSize;
+                  return index >= start && index < end;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // แสดงเลขหน้าป้ายจังหวัด
+      document.getElementById('piePageInfo').innerText =
+        `${legendPage}/${totalPages}`;
+
+      // ปุ่มย้อนกลับ
+      document.getElementById('prevPie').onclick = () => {
+        if (legendPage > 1) {
+          legendPage--;
+          charts.pie.update();
+          updatePageInfo();
+        }
+      };
+      
+      // ปุ่มเลื่อนหน้าถัดไป
+      document.getElementById('nextPie').onclick = () => {
+        if (legendPage < totalPages) {
+          legendPage++;
+          charts.pie.update();
+          updatePageInfo();
+        }
+      };
+      
+      // อับเดท PageInfo
+      function updatePageInfo() {
+        document.getElementById('piePageInfo').innerText =
+          `${legendPage}/${totalPages}`;
+      }
+      
+      // ----------- 2. Radar Chart ---------------------
+      charts.radar = new Chart(document.getElementById('radarChart'), {
+        type: 'radar',
+        data: {
+          labels: ['1 ดาว', '2 ดาว', '3 ดาว', '4 ดาว', '5 ดาว'],
+          datasets: [{
+            label: 'จำนวน',
+            data: data.starDist, 
+            borderColor: 'rgba(255, 99, 132)',
+            backgroundColor: 'rgb(255, 99, 132, 0.5)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                usePointStyle: true,   // สำคัญ
+                pointStyle: 'circle',  // circle | rect | rectRounded | triangle | star
+                padding: 10,
+                boxHeight: 8
+              }
+            }
+          }
+        }
+      })
+    }
+
+    
+    /** ---------สร้าง post-it ---------------- */
+    // สีพื้นหลัง Post-It
+    const colors = [
+      '#dcfce7', // เขียวอ่อน
+      '#ffedd5', // ส้มอ่อน
+      '#fef9c3', // เหลืองอ่อน
+      '#e0f2fe'  // ฟ้าอ่อน
+    ];
+
+    // ภาพหมุดปัก Post-It
+    const img = [
+      ['https://wichianp.github.io/web/pin-green3.png','40'],
+      ['https://wichianp.github.io/web/pin-red.png','40'],
+      ['https://wichianp.github.io/web/pin-blue.png','40']
+    ];
+
+    let currentPage = 1;  // หน้าปัจจุบัน
+    const limit = 12;     // จำนวนแผ่น post-it ต่อหน้า
+    
+    // 1. โหลดข้อมูลสร้าง Post-It
+    function load(page){
+      document.getElementById('spinner').classList.remove('d-none')
+      google.script.run.withSuccessHandler(render)
+        .getRatings(page, limit);
+    }
+    
+    // 2. สร้างการ์ด Post-It
+    function render(res){
+      //console.log(res)
+      const wrap = document.getElementById('cards');
+      wrap.innerHTML = '';
+
+      res.data.forEach(d=>{
+        const randomImg = img[Math.floor(Math.random() * img.length)];
+        const angle = (Math.random()*4-2).toFixed(2);
+        const color = colors[Math.floor(Math.random()*colors.length)];
+        const date = formatThaiIntl(d.date);
+        const card = document.createElement('div');
+        card.className = 'col-md-3 parent';
+        card.style.transform = `rotate(${angle}deg)`;
+
+        card.innerHTML = `
+          <div class="absolute-center-top">
+            <img src="${randomImg[0]}" alt="Description" width="${randomImg[1]}">
+          </div>
+          <div class="card card-post-it h-100" style="background:${color}; rotransform:rotate(${angle}deg); border-radius: 3px;">
+            <div class="card-body">
+              <div class="name">${d.name} ${d.surname}</div>
+              <div class="comment sub-title">&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; ${d.comment}</div>
+            </div>
+            <div class="card-footer mt-3">
+              <span class="stars">${'★'.repeat(d.stars)}</span>
+              <span class="date">${date}</span>
+            </div>
+          </div>
+        `;
+
+        wrap.appendChild(card);
+      });
+      
+      renderPagination(res.total);
+      document.getElementById('spinner').classList.add('d-none')
+
+    }
+
+    // 3. แปลง วัน เดือน ปี พ.ศ. ไทย
+    function formatThaiIntl(input){
+      console.log(input)
+      const [day,month,year] = input.split('/').map(Number);
+      const date = new Date(year, month-1, day);
+      const yearTH = date.getFullYear() + 543;
+      const th = new Intl.DateTimeFormat('th-TH',{
+        day:'numeric',
+        month:'long'
+      }).format(date);
+      return `${th} ${yearTH}`;
+    }
+
+    // 4. สร้างปุ่มแยกหน้า
+    function renderPagination(total){
+      const pages = Math.ceil(total / limit);
+      const p = document.getElementById('pagination');
+      p.innerHTML = '';
+
+      if (pages <= 1) return;
+
+      const maxButtons = 3;
+      let start = Math.max(1, currentPage - 2);
+      let end = Math.min(pages, currentPage + 2);
+
+      if (end - start + 1 < maxButtons) {
+        if (start === 1) {
+          end = Math.min(pages, start + maxButtons - 1);
+        } else if (end === pages) {
+          start = Math.max(1, end - maxButtons + 1);
+        }
+      }
+
+      // ปุ่มหน้าแรก
+      if (start > 1) {
+        addButton(1);
+        if (start > 2) addDots();
+      }
+
+      // ปุ่มช่วงกลาง
+      for (let i = start; i <= end; i++) {
+        addButton(i);
+      }
+
+      // ปุ่มหน้าสุดท้าย
+      if (end < pages) {
+        if (end < pages - 1) addDots();
+        addButton(pages);
+      }
+    }
+    
+    // 5. เพิ่มปุ่มแยกหน้า
+    function addButton(page){
+      const b = document.createElement('button');
+      b.textContent = page;
+      if (page === currentPage) b.classList.add('active');
+      b.onclick = () => {
+        currentPage = page;
+        load(page);
+      };
+      document.getElementById('pagination').appendChild(b);
+    }
+    
+    // 6. เพิ่ม ... ย่อปุ่มระหว่างปุ่มแยกหน้า
+    function addDots(){
+      const span = document.createElement('span');
+      span.textContent = '. . .';
+      span.style.margin = '0 6px';
+      span.style.opacity = '.95';
+      span.classList.add('fw-bold');
+      document.getElementById('pagination').appendChild(span);
+    }
+
+    /** ------------ end post-it--------------------------*/
+
+    
+    /** ----------------- Download -------------------------- */
+    // ------------ สร้าง select option -------------
+    function loadFilesData(){
+      google.script.run.withSuccessHandler(function(projects){
+        const select = document.getElementById('projectSelect');
+        projects.forEach(p=>{
+          console.log(p.Free)
+          const isFile = p.Free;
+          if(isFile){
+            const opt = document.createElement('option');
+            opt.textContent = p.projectName;
+            opt.value = p.projectUrl.split("/")[5];
+            select.appendChild(opt);
+          }
+        });
+      }).getProjects();
+    }
+
+    // ---------- ตรวจสอบสถานะ -----------------
+    function chackStatus(){
+      const regTabTrigger = document.querySelector('button[data-bs-target="#reg-tab"]');
+      const rateTabTrigger = document.querySelector('button[data-bs-target="#rate-tab"]');
+      const btnDownload = document.querySelector('#mainDownloadBtn');
+      const btnRate = document.querySelector('#btnRate');
+
+      // 1. เช็คการลงทะเบียน
+      if (!state.registered) {
+        alert("ขออภัย: คุณยังไม่ได้ลงทะเบียน กรุณากรอกข้อมูลก่อนครับ");
+        bootstrap.Tab.getOrCreateInstance(regTabTrigger).show();
+        btnRate.disabled = true;
+        return;
+      }
+
+      // 2. เช็คการประเมิน
+      if (!state.rated) {
+        alert("ขออภัย: คุณยังไม่ได้ประเมินความพึงพอใจ กรุณาให้ดาวก่อนดาวน์โหลดครับ");
+        bootstrap.Tab.getOrCreateInstance(rateTabTrigger).show();
+        return;
+      }
+
+      // 3. ลงทะเบียนและทำการประเมินแล้ว
+      if(state.registered && state.rated){
+        btnDownload.disabled = false;
+      }
+    }
+
+
+    // ------------------ ฟังก์ชันดำเนินการดาวน์โหลด ---------------
+    function checkAndDownload() {
+      const fileId = document.getElementById('projectSelect').value;
+      const url = 'https://docs.google.com/spreadsheets/d/'+fileId+'/copy';
+      //const url = 'https://docs.google.com/spreadsheets/d/'+state.fileId+'/copy'
+      window.open(url, '_blank');
+      
+      // อัปเดต UI ให้ดูว่าสำเร็จแล้ว
+      document.getElementById('dl-status-text').classList.remove('text-success');
+      document.getElementById('dl-status-text').classList.add('text-warning');
+      document.getElementById('dl-status-text').innerText = "กำลังเริ่มดาวน์โหลดไฟล์...";
+      
+      setTimeout(() => {
+        document.getElementById('home').click()
+      },1000);
+    }
+
+    // ---------------- ส่งคะแนนลงทะเบียน ------------------
+    function submitReg() {
+      event.preventDefault();
+      const data = {
+        firstName: document.getElementById('fname').value,
+        lastName: document.getElementById('lname').value,
+        agency: document.getElementById('agency').value,
+        district: document.getElementById('dist').value,
+        province: document.getElementById('prov').value
+      };
+    
+      // จำลองการโหลดหรือเรียก google.script.run
+      google.script.run.withSuccessHandler(data => {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        state = data ;
+        document.getElementById('cur-id').innerText = data.id;
+        
+        // ไปหน้าถัดไป
+        bootstrap.Tab.getOrCreateInstance(document.getElementById('rate-nav')).show();
+      }).registerUser(data);
+    }
+
+    // ----------- ส่งคะแนนประเมินผล ----------------
+    function submitRate() {
+      if(!state.registered) return alert('กรุณาลงทะเบียนก่อน');
+      if(stars === 0) return alert('กรุณาคลิกเลือกจำนวนดาว');
+      // ดึงข้อมูลเดิม
+      let datainfoApp = JSON.parse(localStorage.getItem(CACHE_KEY)) || {};
+
+      // เพิ่มค่า rated
+      datainfoApp.rated = true;
+
+      // บันทึกกลับเข้า localStorage
+      localStorage.setItem("datainfoApp", JSON.stringify(datainfoApp));
+
+      const dataInfoRating = { 
+        userId: state.id, 
+        stars: state.stars, 
+        comment: document.getElementById('comment').value 
+      }
+
+      google.script.run.withSuccessHandler(data => {
+        state.rated = true;
+        datainfoApp.rated = true;
+        localStorage.setItem(CACHE_KEY, JSON.stringify(datainfoApp));
+        document.getElementById('dl-icon-area').innerHTML = '<i class="fa-solid fa-circle-check fa-5x text-success mb-3"></i>';
+        document.getElementById('dl-status-text').innerText = "ตรวจสอบเรียบร้อย คุณสามารถดาวน์โหลดได้ทันที";
+        
+        alert('ขอบคุณสำหรับคะแนนประเมินครับ');
+        document.querySelectorAll('.star-rating i').forEach(s => {
+          s.classList.remove('active', s.dataset.v <= state.stars);
+        });
+
+        setTimeout(() => {
+          stars = 0;
+          chackStatus();
+          bootstrap.Tab.getOrCreateInstance(document.getElementById('dl-nav')).show();
+
+        }, 500);
+        
+      }).submitRating(dataInfoRating);
+    }
+
+  </script>
+</body>
+
+</html>
